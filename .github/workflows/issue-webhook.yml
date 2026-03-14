@@ -1,0 +1,43 @@
+name: Forward Issue To Local Service
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+      - reopened
+
+jobs:
+  forward-issue:
+    # `localhost` points to the machine running the runner,
+    # so this workflow should use a self-hosted runner.
+    runs-on: self-hosted
+
+    steps:
+      - name: Send issue content to local service
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = {
+              title: context.payload.issue?.title ?? "",
+              text: context.payload.issue?.body ?? ""
+            };
+
+            const response = await fetch("http://localhost:8089/issue", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            const responseText = await response.text();
+
+            if (!response.ok) {
+              core.setFailed(
+                `Request failed: ${response.status} ${response.statusText}\n${responseText}`
+              );
+              return;
+            }
+
+            core.info(`Delivered issue payload successfully: ${responseText}`);
