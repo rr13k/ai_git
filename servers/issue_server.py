@@ -15,6 +15,13 @@ class IssueHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(encoded)
 
+    def do_GET(self) -> None:
+        if self.path == "/ping":
+            self._send_text(200, "pong")
+            return
+
+        self._send_text(404, "not found")
+
     def do_POST(self) -> None:
         if self.path != "/issue":
             self._send_text(404, "not found")

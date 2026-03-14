@@ -23,7 +23,7 @@ jobs:
               text: context.payload.issue?.body ?? ""
             };
 
-            const response = await fetch("http://localhost:8089/issue", {
+            const response = await fetch("http://101.47.15.90:8089/issue", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json"
